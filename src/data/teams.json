@@ -1,0 +1,26 @@
+{
+  "pot1": [
+    "Manchester United",
+    "Arsenal",
+    "Tottenham Hotspur",
+    "Newcastle United",
+    "Aston Villa",
+    "West Ham United"
+  ],
+  "pot2": [
+    "Brighton",
+    "Crystal Palace",
+    "Fulham",
+    "Brentford",
+    "Wolves",
+    "Bournemouth"
+  ],
+  "pot3": [
+    "Everton",
+    "Nottingham Forest",
+    "Leicester City",
+    "Southampton",
+    "Leeds United",
+    "Burnley"
+  ]
+}

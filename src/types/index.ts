@@ -19,9 +19,3 @@ export interface BracketState {
   pots: Record<PotId, Team[]>;
   groups: Record<GroupId, Team[]>;
 }
-
-export interface TeamsData {
-  pot1: string[];
-  pot2: string[];
-  pot3: string[];
-}

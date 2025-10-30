@@ -8,28 +8,29 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import type { BracketState, Team, PotId, GroupId, TeamsData } from './types';
+import type { BracketState, Team, PotId, GroupId } from './types';
 import Pot from './components/Pot';
 import Group from './components/Group';
 import TeamCard from './components/TeamCard';
-import teamsData from './data/teams.json';
+import ExcelUpload from './components/ExcelUpload';
 
 function initializeBracketState(): BracketState {
-  const data = teamsData as TeamsData;
+  // Try to load from localStorage first
+  const savedState = localStorage.getItem('bracketState');
+  if (savedState) {
+    try {
+      return JSON.parse(savedState);
+    } catch (error) {
+      console.error('Error parsing saved state:', error);
+    }
+  }
 
-  const createTeams = (potId: PotId, teamNames: string[]): Team[] => {
-    return teamNames.map((name, index) => ({
-      id: `${potId}-${index}`,
-      name,
-      potId,
-    }));
-  };
-
+  // Return empty state if no data in localStorage
   return {
     pots: {
-      pot1: createTeams('pot1', data.pot1),
-      pot2: createTeams('pot2', data.pot2),
-      pot3: createTeams('pot3', data.pot3),
+      pot1: [],
+      pot2: [],
+      pot3: [],
     },
     groups: {
       A: [],
@@ -138,9 +139,14 @@ function App() {
   };
 
   const handleReset = () => {
-    if (confirm('Are you sure you want to reset? All teams will return to their original pots.')) {
+    if (confirm('Are you sure you want to reset? This will clear all teams and groups.')) {
+      localStorage.removeItem('bracketState');
       setBracketState(initializeBracketState());
     }
+  };
+
+  const handleDataLoaded = (newState: BracketState) => {
+    setBracketState(newState);
   };
 
   // Listen for fullscreen changes (e.g., when user presses ESC)
@@ -154,6 +160,11 @@ function App() {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
   }, []);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('bracketState', JSON.stringify(bracketState));
+  }, [bracketState]);
 
   return (
     <DndContext
@@ -172,6 +183,7 @@ function App() {
           <div className={`fixed top-4 right-4 z-50 flex gap-2 transition-all duration-200 ${
             isFullscreen ? 'opacity-0 hover:opacity-100' : ''
           }`}>
+            {!isFullscreen && <ExcelUpload onDataLoaded={handleDataLoaded} />}
             <button
               onClick={handleReset}
               className="px-5 py-2.5 bg-[#6366F1] text-white rounded hover:bg-[#4F46E5] transition-colors duration-200 shadow font-semibold uppercase text-sm tracking-wide"
